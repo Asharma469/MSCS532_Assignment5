@@ -40,7 +40,7 @@ def PrintResults(analyzers: List[FunctionAnalyzer]):
 
     results = {
         (analyzer.function_name, analyzer.test_name, length): (
-            f"{elapsed:.9f}" if elapsed != -1 else status
+            f"{elapsed * 1000:.9f}" if elapsed != -1 else status
         )
         for analyzer in analyzers
         for length, elapsed, status in analyzer.results

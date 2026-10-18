@@ -57,4 +57,4 @@ class FunctionAnalyzer:
             if elapsed == -1:
                 print(f"  Length {length}: {status}")
             else:
-                print(f"  Length {length}: {elapsed:.9f} seconds")
+                print(f"  Length {length}: {elapsed * 1000:.6f} ms")
