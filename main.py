@@ -5,13 +5,38 @@ from randomized_quick_sort import QuickSort
 from randomized_quick_sort import QuickSortFirstPivot
 from randomized_quick_sort import RandomizedQuickSort
 
-
+# helper functions
 def GetRandomArray(size: int) -> List[int]:
-    return random.sample(range(size), size)
+    return [random.randint(1, size) for _ in range(size)]
 
+# generate an array with duplicate values randomly placed in the array
 def GenShuffledDuplicateArray(size: int, values: int) -> List[int]:
     return [random.randint(1, values) for _ in range(size)]
-    
+
+
+ARRAY_SIZES = {
+    "small": 100,
+    "medium": 500,
+    "large": 1000,
+}
+REPEATS = 30
+SORTS = (
+    ("QuickSort (middle pivot)", QuickSort),
+    ("QuickSort (first pivot)", QuickSortFirstPivot),
+    ("RandomizedQuickSort", RandomizedQuickSort)
+)
+
+random.seed(42)
+datasets = {"random": [], "sorted": [], "reversed": [], "duplicates": []}
+
+for length in ARRAY_SIZES.values():
+    random_values = GetRandomArray(length)
+    datasets["random"].append(random_values)
+    datasets["sorted"].append(sorted(random_values))
+    datasets["reversed"].append(sorted(random_values, reverse=True))
+    datasets["duplicates"].append(GenShuffledDuplicateArray(length, 3))
+
+
 def test_sorting_algorithms(arr):
     arr = GetRandomArray(30)
     print("Original array:", arr)
@@ -76,33 +101,32 @@ def PrintResults(analyzers: List[FunctionAnalyzer]):
             ))
 
 
-ARRAY_SIZES = {
-    "small": 100,
-    "medium": 500,
-    "large": 1000,
-}
-REPEATS = 30
-SORTS = (
-    ("QuickSort (middle pivot)", QuickSort),
-    ("QuickSort (first pivot)", QuickSortFirstPivot),
-    ("RandomizedQuickSort", RandomizedQuickSort)
-)
 
-random.seed(42)
-datasets = {"random": [], "sorted": [], "reversed": [], "duplicates": []}
+def RunSortingBenchmarks():
+    analyzers = []
+    for test_name, test_arrays in datasets.items():
+        for function_name, sort_function in SORTS:
+            analyzer = FunctionAnalyzer(REPEATS, test_arrays, test_name)
+            analyzer.StartTest(sort_function, function_name)
+            analyzers.append(analyzer)
 
-for length in ARRAY_SIZES.values():
-    random_values = GetRandomArray(length)
-    datasets["random"].append(random_values)
-    datasets["sorted"].append(sorted(random_values))
-    datasets["reversed"].append(sorted(random_values, reverse=True))
-    datasets["duplicates"].append(GenShuffledDuplicateArray(length, 3))
+    PrintResults(analyzers)
 
-analyzers = []
-for test_name, test_arrays in datasets.items():
-    for function_name, sort_function in SORTS:
-        analyzer = FunctionAnalyzer(REPEATS, test_arrays, test_name)
-        analyzer.StartTest(sort_function, function_name)
-        analyzers.append(analyzer)
+def TestSortingAlgorithms():
+    print("\nTesting sorting algorithms on sample arrays of length 100:")
+    for name, arrays in datasets.items():
+        for function_name, sort_function in SORTS:
+            print(f"\nTesting {function_name} on {name} arrays:")
+            test_array = arrays[0].copy()
+            print(sort_function(test_array, 0, len(test_array) - 1))
+    print("\n Done printing the results\n")
 
-PrintResults(analyzers)
+
+
+# --------- Main Code. ---------
+
+if __name__ == "__main__":
+    # Run the sorting benchmarks and print the results.
+    #TestSortingAlgorithms()  # Uncomment this line to test sorting algorithms on sample arrays.
+
+    RunSortingBenchmarks()
