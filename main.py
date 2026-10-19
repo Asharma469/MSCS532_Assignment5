@@ -9,6 +9,9 @@ from randomized_quick_sort import RandomizedQuickSort
 def GetRandomArray(size: int) -> List[int]:
     return random.sample(range(size), size)
 
+def GenShuffledDuplicateArray(size: int, values: int) -> List[int]:
+    return [random.randint(1, values) for _ in range(size)]
+    
 def test_sorting_algorithms(arr):
     arr = GetRandomArray(30)
     print("Original array:", arr)
@@ -82,17 +85,18 @@ REPEATS = 30
 SORTS = (
     ("QuickSort (middle pivot)", QuickSort),
     ("QuickSort (first pivot)", QuickSortFirstPivot),
-    ("RandomizedQuickSort", RandomizedQuickSort),
+    ("RandomizedQuickSort", RandomizedQuickSort)
 )
 
 random.seed(42)
-datasets = {"random": [], "sorted": [], "reversed": []}
+datasets = {"random": [], "sorted": [], "reversed": [], "duplicates": []}
 
 for length in ARRAY_SIZES.values():
     random_values = GetRandomArray(length)
     datasets["random"].append(random_values)
     datasets["sorted"].append(sorted(random_values))
     datasets["reversed"].append(sorted(random_values, reverse=True))
+    datasets["duplicates"].append(GenShuffledDuplicateArray(length, 3))
 
 analyzers = []
 for test_name, test_arrays in datasets.items():
